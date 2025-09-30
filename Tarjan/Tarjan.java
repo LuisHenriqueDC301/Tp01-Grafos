@@ -101,7 +101,7 @@ static void dfs(int start) {
                 disc[v] = low[v] = ++time;
                 stack.push(v);
             } else if (v != pai[u]) {
-                // atualiza low de u se encontrar um back edge
+                // atualiza low de u caso low seja menos que o TD 
                 low[u] = Math.min(low[u], disc[v]);
             }
         } else {
