@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class EncontraPontes {
+public class EncontraPontes2 {
 
     static List<List<Integer>> grafo;
     static int time = 0;
@@ -9,13 +9,33 @@ public class EncontraPontes {
     static boolean[] visitado;
 
     public static void main(String[] args) {
-        
-        String filePath = "E:\\Documentos2\\Grafos\\Trabalho\\Ponte100.txt"; 
-        try {
-            encontrarPontes(filePath); // chamada 
-        } catch (IOException e) {
-            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+        try (Scanner scanner = new Scanner(System.in)) {
+            File arquivo = lerArquivo(scanner);  
+            try {
+                encontrarPontes(arquivo.getPath()); //chamada
+            } catch (IOException e) {
+                System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+            }
+        } 
+    }
+
+
+    public static File lerArquivo(Scanner scanner) {
+        String fileName;
+        File file;
+
+        System.out.println("Digite o nome do arquivo:");
+        fileName = scanner.nextLine();
+        file = new File(fileName);
+
+        while (!file.exists()) {
+            System.out.println("Arquivo não encontrado!");
+            System.out.println("Digite o nome do arquivo:");
+            fileName = scanner.nextLine();
+            file = new File(fileName);
         }
+
+        return file;
     }
 
     public static void encontrarPontes(String filePath) throws IOException {
@@ -31,7 +51,7 @@ public class EncontraPontes {
         String line;
         while ((line = reader.readLine()) != null) {
             if (!line.trim().isEmpty()) {
-                String[] parts = line.trim().split(" ");
+                String[] parts = line.trim().split("\\s+");
                 int u = Integer.parseInt(parts[0]);
                 int v = Integer.parseInt(parts[1]);
 
@@ -46,7 +66,9 @@ public class EncontraPontes {
         low = new int[n]; //menor tempo alcançável a partir do vértice (retornos ou descendentes) coisa do Tarjan
         pai = new int[n]; // pai na DFS
         visitado = new boolean[n]; // se foi visitado
-        Arrays.fill(pai, -1); // preenchendo o array de pais
+        Arrays.fill(pai, -1); // preenchendo tudo no começo
+
+        time = 0;
 
         System.out.println("Pontes encontradas:");
         for (int i = 0; i < n; i++) {
@@ -67,11 +89,12 @@ public class EncontraPontes {
                                                     //Importante notar que aqui saiu da Recursão, logo a DFS do vertice atual terminou 
                 low[u] = Math.min(low[u], low[v]);  // atualizando o LOW de acordo com o filho e  pai
 
-                if (low[v] > disc[u]) {             // Se o LOW for maior que a descoberta significa que não há outro caminho para vertice,logo PONTE
+
+                if (low[v] > disc[u]) {                 // Se o LOW for maior que a descoberta significa que não há outro caminho para vertice,logo PONTE
                     System.out.println(u + " - " + v);
                 }
-            } else if (v != pai[u]) {            // Se não, significa que há outro caminho que pode ter um low menor, então primeiro garantir que v não é pai direto de u...
-                low[u] = Math.min(low[u], disc[v]); // ...Depois atualizar o low para refletir o menor entre os caminhos
+            } else if (v != pai[u]) {                   // Se não, significa que há outro caminho que pode ter um low menor, então primeiro garantir que v não é pai direto de u...
+                low[u] = Math.min(low[u], disc[v]);     // ...Depois atualizar o low para refletir o menor entre os caminhos
             }
         }
     }
