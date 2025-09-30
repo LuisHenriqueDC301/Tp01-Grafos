@@ -1,4 +1,4 @@
-package GraphGenerator;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,8 +8,8 @@ import java.util.Random;
 public class GraphGeneratorFinal {
 
     public static void main(String[] args) {
-        long n = 10000; // Tamanho do grafo
-        int numEdges = 50000; // Número de arestas
+        long n = 100; // Tamanho do grafo
+        int numEdges = 150; // Número de arestas
 
         generateEulerianGraph(n, numEdges);
         generateNonEulerianGraph(n, numEdges);

@@ -41,7 +41,8 @@ public class TP01 {
         return file;
     }
 
-    // Função para montar Lista de Adjacência a partir do arquivo txt
+    // Função para montar Lista de Adjacência para N-Direcionado a partir do arquivo
+    // txt
     public static void montarGrafo(ArrayList<Integer>[] listaAdjacente, Scanner scannerFile, int N) {
         int vertice1, vertice2;
 
@@ -49,6 +50,7 @@ public class TP01 {
             vertice1 = scannerFile.nextInt();
             vertice2 = scannerFile.nextInt();
             listaAdjacente[vertice1].add(vertice2);
+            listaAdjacente[vertice2].add(vertice1);
         }
         // Ordena pra ordem lexografica
         for (int i = 0; i <= N; i++) {
@@ -65,7 +67,7 @@ public class TP01 {
         }
     }
 
-    //Função que garante que todos os vértices sejam visitados
+    // Função que garante que todos os vértices sejam visitados
     public static void buscaEmProfundidade(TabelaBusca[] tabela, ArrayList<Integer>[] grafo, int N) throws IOException {
 
         // Loop para garantir que todos os vértices sejam visitados
@@ -76,8 +78,8 @@ public class TP01 {
         }
     }
 
-    
-    public static void buscaEmProfundidadeIterativa(TabelaBusca[] tabela, ArrayList<Integer>[] grafo, int vInicial,int N) throws IOException {
+    public static void buscaEmProfundidadeIterativa(TabelaBusca[] tabela, ArrayList<Integer>[] grafo, int vInicial,
+            int N) throws IOException {
         int t = 1;
 
         // Tirar aviso do compilador
