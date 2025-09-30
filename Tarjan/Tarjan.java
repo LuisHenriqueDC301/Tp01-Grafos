@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class EncontraPontes3 {
+public class Tarjan {
 
     static List<List<Integer>> grafo;
     static int time = 0;
@@ -101,11 +101,11 @@ static void dfs(int start) {
                 disc[v] = low[v] = ++time;
                 stack.push(v);
             } else if (v != pai[u]) {
-                // Atualiza low de u se encontrar um back edge
+                // atualiza low de u se encontrar um back edge
                 low[u] = Math.min(low[u], disc[v]);
             }
         } else {
-            // Todos os vizinhos de u foram explorados
+            
             stack.pop();
             if (pai[u] != -1) {
                 low[pai[u]] = Math.min(low[pai[u]], low[u]);
