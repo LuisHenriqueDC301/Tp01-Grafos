@@ -147,7 +147,29 @@ public class Naive {
         return 0; // fallback
     }
 
-    // Método para encontrar pontes utilizando busca iterativa
+    // Método Naive para ver se aresta {u,v} é ponte
+    public static boolean ehPonteNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int N, int u, int v) {
+        boolean ehPonte = false;
+        int start = escolherStart(grafo, N);
+        resetTabela(tabela, N);
+        int verticesEncontraveis = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
+
+        resetTabela(tabela, N);
+        // remove, testa, restaura
+        removerAresta(grafo, u, v);
+
+        int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
+
+        if (alcancados < verticesEncontraveis) {
+            ehPonte = true;
+        }
+
+        adicionarAresta(grafo, u, v);
+        return ehPonte;
+
+    }
+
+    // Método para encontrar todas as pontes utilizando busca iterativa
     public static ArrayList<int[]> pontesNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int N) {
         ArrayList<int[]> pontes = new ArrayList<>();
         ArrayList<int[]> arestas = listarArestasUnicas(grafo, N);
@@ -163,7 +185,7 @@ public class Naive {
             removerAresta(grafo, u, v);
 
             int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
-            
+
             if (alcancados < verticesEncontraveis) {
                 pontes.add(new int[] { u, v });
             }
