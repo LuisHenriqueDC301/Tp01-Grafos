@@ -180,7 +180,11 @@ public class TarjanFleury {
         tin = new int[N];
         low = new int[N];
 
+        long startTime = System.nanoTime();
         ArrayList<Integer> caminhoEuleriano = algoritmoFleury(listaAdjacente, N);
+        long endTime = System.nanoTime();  // Fim Da Contagem do Tempo
+        double duration=  (endTime - startTime) / 1_000_000.0 ; //Mili Segundos
+
 
         if (!caminhoEuleriano.isEmpty()) {
             System.out.println("\n--- Resultado do Algoritmo de Fleury (Tarjan) ---");
@@ -190,7 +194,7 @@ public class TarjanFleury {
             }
             System.out.println();
         }
-
+        IO.println("Tempo de Execucao MiliSegundos: "+ duration);
         scannerFile.close();
     }
 }
