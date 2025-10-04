@@ -64,17 +64,9 @@ public class Fleury_Tarjan {
         adj[v].add(u);
     }
 
-    // Pega um vértice de partida que d(v) >0
-    static int escolherStart(ArrayList<Integer>[] g, int N) {
-        for (int i = 0; i < N; i++) {
-            if (!g[i].isEmpty())
-                return i;
-        }
-        return 0; // fallback
-    }
-
     // v1 e v2 representam a aresta em analise
-    public static boolean buscaEmProfundidadeIterativaTarjan(TabelaBusca[] tabela, ArrayList<Integer>[] grafo,int vInicial, int N, int v1, int v2) {
+    public static boolean buscaEmProfundidadeIterativaTarjan(ArrayList<Integer>[] grafo, TabelaBusca[] tabela,
+            int vInicial, int N, int v1, int v2) {
         boolean ehPonte = false;
         int t = 0;
 
@@ -138,7 +130,6 @@ public class Fleury_Tarjan {
         return ehPonte;
     }
 
-
     public static ArrayList<Integer> algoritmoFleury(ArrayList<Integer>[] grafoOriginal, TabelaBusca[] tabela, int N) {
 
         // 1. Verificação da Condição Euleriana (Passo 1 do seu algoritmo)
@@ -150,6 +141,7 @@ public class Fleury_Tarjan {
         }
 
         // 2. Inicializar grafo auxiliar G'
+
         ArrayList<Integer>[] G_prime = clonarGrafo(grafoOriginal, N);
 
         // 3. Selecionar vértice inicial v
@@ -184,8 +176,8 @@ public class Fleury_Tarjan {
                 // Selecionar aresta {v, w} que não seja ponte em G'
                 for (int w : vizinhos_copia) {
                     // Usando seu método de checagem de ponte no grafo atual G'
-                    int v_raizBusca = escolherStart(G_prime, N);
-                    if (!buscaEmProfundidadeIterativaTarjan(tabela,G_prime,1, N, v, w)) {
+                    
+                    if (!buscaEmProfundidadeIterativaTarjan(G_prime, tabela, v_atual, N, v, w)) {
                         w_proximo = w;
                         break; // Selecionada aresta não-ponte
                     }
@@ -298,14 +290,14 @@ public class Fleury_Tarjan {
 
         // Monta o Grafo a partir do arquivo txt
         montarGrafo(listaAdjacente, scannerFile, N);
-        
+
         // --- PONTO DE CHAMADA DO ALGORITMO DE FLEURY ---
         long startTime = System.nanoTime(); // Inicio Da Contagem do Tempo
 
         ArrayList<Integer> caminhoEuleriano = algoritmoFleury(listaAdjacente, tabela, N);
 
-        long endTime = System.nanoTime();  // Fim Da Contagem do Tempo
-        double duration=  (endTime - startTime) / 1_000_000.0 ; //Mili Segundos
+        long endTime = System.nanoTime(); // Fim Da Contagem do Tempo
+        double duration = (endTime - startTime) / 1_000_000.0; // Mili Segundos
 
         if (!caminhoEuleriano.isEmpty()) {
             System.out.println("\n--- Resultado do Algoritmo de Fleury-Tarjan---");
@@ -320,9 +312,9 @@ public class Fleury_Tarjan {
             }
             System.out.println();
 
-            
-        System.out.println("Tempo de Execucao MiliSegundos: "+ duration);
-        scannerFile.close();
-    }
+            System.out.println("Tempo de Execucao MiliSegundos: " + duration);
+            scannerFile.close();
+        }
 
-}}
+    }
+}

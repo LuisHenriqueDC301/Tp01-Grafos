@@ -72,15 +72,6 @@ public class Fleury_Naive {
         }
     }
 
-    // Pega um vértice de partida que d(v) >0
-    static int escolherStart(ArrayList<Integer>[] g, int N) {
-        for (int i = 0; i < N; i++) {
-            if (!g[i].isEmpty())
-                return i;
-        }
-        return 0; // fallback
-    }
-
     public static int buscaEmProfundidadeIterativaNaive(TabelaBusca[] tabela, ArrayList<Integer>[] grafo, int vInicial,
             int N) {
         int t = 1;
@@ -124,15 +115,14 @@ public class Fleury_Naive {
     }
 
     // Método Naive para ver se aresta {u,v} é ponte
-    public static boolean ehPonteNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int N, int u, int v) {
+    public static boolean ehPonteNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int vInicial, int N, int u, int v) {
         boolean ehPonte = false;
-        int start = escolherStart(grafo, N);
 
         resetTabela(tabela, N);
         // remove, testa, restaura
         removerAresta(grafo, u, v);
 
-        int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, 1, N);
+        int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, vInicial, N);
 
         if (alcancados < N) {
             ehPonte = true;
@@ -188,7 +178,8 @@ public class Fleury_Naive {
                 // Selecionar aresta {v, w} que não seja ponte em G'
                 for (int w : vizinhos_copia) {
                     // Usando seu método de checagem de ponte no grafo atual G'
-                    if (!ehPonteNaive(G_prime, tabela, N, v, w)) {
+                    
+                    if (!ehPonteNaive(G_prime, tabela,v_atual, N, v, w)) {
                         w_proximo = w;
                         break; // Selecionada aresta não-ponte
                     }
@@ -302,9 +293,6 @@ public class Fleury_Naive {
         // Monta o Grafo a partir do arquivo txt
         montarGrafo(listaAdjacente, scannerFile, N);
 
-        for (int i = 0; i < N; i++) {
-            Collections.sort(listaAdjacente[i]);
-        }
         // --- PONTO DE CHAMADA DO ALGORITMO DE FLEURY ---
         long startTime = System.nanoTime(); // Inicio Da Contagem do Tempo
 
