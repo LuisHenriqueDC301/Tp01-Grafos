@@ -7,7 +7,7 @@ import java.util.*;
 // - Luis Henrique Ferreira Costa
 // - 
 
-public class Fleury {
+public class FleuryNaive {
 
     static class TabelaBusca {
         public int TD;
@@ -374,4 +374,4 @@ public class Fleury {
         scannerFile.close();
     }
 
-}
+}}
