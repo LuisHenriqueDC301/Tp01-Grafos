@@ -1,0 +1,377 @@
+import java.io.*;
+import java.util.*;
+// Trabalho Prático TGC N01 -
+// Professor: Zenilton Kleber Gonçalves do Patrocínio Junior
+// Alunos: 
+// - Arthur Henrique Tristão Pinto
+// - Luis Henrique Ferreira Costa
+// - 
+
+public class Fleury {
+
+    static class TabelaBusca {
+        public int TD;
+        public int TT;
+        public int pai;
+
+        public TabelaBusca() {
+            TD = TT = pai = 0;
+        }
+    }
+
+    // Função pare leitura de arquivos
+    public static File lerArquivo() {
+        // scanner não é fechado aqui para não conflitar com a Main
+        Scanner scanner = new Scanner(System.in);
+        String fileName;
+        File file;
+        System.out.println("Digite o nome do arquivo");
+        fileName = scanner.nextLine();
+        file = new File(fileName);
+        while (!file.exists()) {
+            System.out.println("Arquivo nao encontrado!");
+            System.out.println("Digite o nome do arquivo");
+            fileName = scanner.nextLine();
+            file = new File(fileName);
+        }
+
+        return file;
+    }
+
+    // Função para montar Lista de Adjacência a partir do arquivo txt
+    public static void montarGrafo(ArrayList<Integer>[] listaAdjacente, Scanner scannerFile, int N) {
+        int vertice1, vertice2;
+
+        while (scannerFile.hasNextInt()) {
+            vertice1 = scannerFile.nextInt();
+            vertice2 = scannerFile.nextInt();
+            listaAdjacente[vertice1].add(vertice2);
+            listaAdjacente[vertice2].add(vertice1);
+        }
+
+    }
+
+    // Função para mostrar arestas do grafo
+    public static void mostrarArestas(ArrayList<Integer>[] listaAdjacente, int N) {
+        for (int i = 0; i < N; i++) {
+            for (int vizinho : listaAdjacente[i]) {
+                System.out.println(i + " -- " + vizinho);
+            }
+        }
+    }
+
+    public static int buscaEmProfundidadeIterativaNaive(TabelaBusca[] tabela, ArrayList<Integer>[] grafo, int vInicial,
+            int N) {
+
+        int t = 1;
+        // Começa em 1 para contar vertice inicial
+        int encontrados = 1;
+
+        // Tirar aviso do compilador
+        @SuppressWarnings("unchecked")
+        Iterator<Integer>[] adjIterators = new Iterator[N];
+        for (int i = 0; i < N; i++) {
+            adjIterators[i] = grafo[i].iterator();
+        }
+
+        Stack<Integer> pilha = new Stack<>();
+
+        t++;
+        tabela[vInicial].TD = t;
+        pilha.push(vInicial);
+
+        while (!pilha.isEmpty()) {
+            int v = pilha.peek();
+
+            if (adjIterators[v].hasNext()) {
+                int w = adjIterators[v].next();
+
+                if (tabela[w].TD == 0) {
+                    encontrados++;
+                    t++;
+                    tabela[w].TD = t;
+                    tabela[w].pai = v;
+
+                    pilha.push(w);
+                }
+            } else {
+                pilha.pop();
+                t++;
+                tabela[v].TT = t;
+            }
+        }
+        return encontrados;
+    }
+
+    // Remove aresta não dirigida (u,v) das listas
+    public static void removerAresta(ArrayList<Integer>[] adj, int u, int v) {
+        adj[u].remove(Integer.valueOf(v));
+        adj[v].remove(Integer.valueOf(u));
+    }
+
+    // Restaura aresta não dirigida (u,v) nas listas
+    public static void adicionarAresta(ArrayList<Integer>[] adj, int u, int v) {
+        adj[u].add(v);
+        adj[v].add(u);
+    }
+
+    // Restaura a Tabela para fazer Busca
+    public static void resetTabela(TabelaBusca[] tabela, int N) {
+        for (int i = 0; i < N; i++) {
+            tabela[i].TD = 0;
+            tabela[i].TT = 0;
+            tabela[i].pai = 0;
+        }
+    }
+
+    // Lista arestas únicas (u < v) para não testar duplicado
+    public static ArrayList<int[]> listarArestasUnicas(ArrayList<Integer>[] g, int N) {
+        ArrayList<int[]> E = new ArrayList<>();
+        for (int u = 0; u < N; u++) {
+            for (int v : g[u]) {
+                if (u < v)
+                    E.add(new int[] { u, v });
+            }
+        }
+        return E;
+    }
+
+    // Pega um vértice de partida que d(v) >0
+    static int escolherStart(ArrayList<Integer>[] g, int N) {
+        for (int i = 0; i < N; i++) {
+            if (!g[i].isEmpty())
+                return i;
+        }
+        return 0; // fallback
+    }
+
+    // Método Naive para ver se aresta {u,v} é ponte
+    public static boolean ehPonteNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int N, int u, int v) {
+        boolean ehPonte = false;
+        int start = escolherStart(grafo, N);
+        resetTabela(tabela, N);
+        int verticesEncontraveis = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
+
+        resetTabela(tabela, N);
+        // remove, testa, restaura
+        removerAresta(grafo, u, v);
+
+        int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
+
+        if (alcancados < verticesEncontraveis) {
+            ehPonte = true;
+        }
+
+        adicionarAresta(grafo, u, v);
+        return ehPonte;
+
+    }
+
+    // Método para encontrar todas as pontes utilizando busca iterativa
+    public static ArrayList<int[]> pontesNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int N) {
+        ArrayList<int[]> pontes = new ArrayList<>();
+        ArrayList<int[]> arestas = listarArestasUnicas(grafo, N);
+
+        int start = escolherStart(grafo, N);
+        resetTabela(tabela, N);
+        int verticesEncontraveis = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
+
+        for (int[] e : arestas) {
+            int u = e[0], v = e[1];
+            resetTabela(tabela, N);
+            // remove, testa, restaura
+            removerAresta(grafo, u, v);
+
+            int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
+
+            if (alcancados < verticesEncontraveis) {
+                pontes.add(new int[] { u, v });
+            }
+
+            adicionarAresta(grafo, u, v);
+        }
+        return pontes;
+    }
+
+    public static ArrayList<Integer> algoritmoFleury(ArrayList<Integer>[] grafoOriginal, TabelaBusca[] tabela, int N) {
+
+        // 1. Verificação da Condição Euleriana (Passo 1 do seu algoritmo)
+        int impares = contarGrausImpares(grafoOriginal, N);
+        if (impares > 2) {
+            System.out.println("Erro: O grafo possui " + impares
+                    + " vértices de grau ímpar. Não há caminho ou circuito Euleriano.");
+            return new ArrayList<>();
+        }
+
+        // 2. Inicializar grafo auxiliar G'
+        ArrayList<Integer>[] G_prime = clonarGrafo(grafoOriginal, N);
+
+        // 3. Selecionar vértice inicial v
+        // Escolhe um ímpar, se houver, conforme a regra de Fleury.
+        int v_atual = encontrarVerticeInicial(G_prime, N);
+        if (v_atual == -1) {
+            System.out.println("O grafo está vazio.");
+            return new ArrayList<>();
+        }
+
+        ArrayList<Integer> caminho = new ArrayList<>();
+        caminho.add(v_atual);
+
+        // Contagem inicial de arestas (cada aresta é contada duas vezes na soma dos
+        // graus)
+        int arestas_restantes = 0;
+        for (int i = 0; i < N; i++) {
+            arestas_restantes += grau(G_prime, i);
+        }
+        arestas_restantes /= 2;
+
+        // 4. enquanto E' ≠ ∅ efetuar
+        while (arestas_restantes > 0) {
+            int v = v_atual;
+            int w_proximo = -1;
+
+            // Copia a lista de vizinhos para iterar com segurança
+            ArrayList<Integer> vizinhos_copia = new ArrayList<>(G_prime[v]);
+
+            // a. se d(v) > 1
+            if (grau(G_prime, v) > 1) {
+                // Selecionar aresta {v, w} que não seja ponte em G'
+                for (int w : vizinhos_copia) {
+                    // Usando seu método de checagem de ponte no grafo atual G'
+                    if (!ehPonteNaive(G_prime, tabela, N, v, w)) {
+                        w_proximo = w;
+                        break; // Selecionada aresta não-ponte
+                    }
+                }
+
+                // Se todas as arestas são pontes, é o último recurso.
+                // Em um grafo Euleriano válido, isto só deveria acontecer se d(v)=1.
+                // Para garantir o término, se w_proximo == -1, seleciona a primeira aresta
+                // restante.
+                if (w_proximo == -1) {
+                    w_proximo = vizinhos_copia.get(0);
+                }
+            }
+            // b. senão (d(v) == 1)
+            else {
+                // Selecionar a única aresta {v, w} disponível em G'
+                w_proximo = vizinhos_copia.get(0);
+            }
+
+            // Checagem de segurança
+            if (w_proximo == -1) {
+                // O loop terminou prematuramente (grafo desconectado, erro, etc.)
+                break;
+            }
+
+            // c. v <- w; E' <- E' - {v, w}
+            removerAresta(G_prime, v, w_proximo);
+            caminho.add(w_proximo);
+            v_atual = w_proximo;
+            arestas_restantes--;
+        }
+
+        return caminho;
+    }
+
+    // Retorna o grau do vértice v no grafo atual
+    private static int grau(ArrayList<Integer>[] grafo, int v) {
+        return grafo[v].size();
+    }
+
+    // Encontra um vértice de partida que tem d(v) > 0.
+    // Adaptação para o Fleury: Se o grafo tem vértices ímpares, deve retornar um
+    // deles.
+    private static int encontrarVerticeInicial(ArrayList<Integer>[] grafo, int N) {
+        int v_impar = -1;
+        int v_qualquer = -1;
+
+        for (int i = 0; i < N; i++) {
+            int d = grau(grafo, i);
+            if (d > 0) {
+                if (v_qualquer == -1)
+                    v_qualquer = i;
+                if (d % 2 != 0) {
+                    v_impar = i;
+                    break; // Prioridade: ímpar
+                }
+            }
+        }
+
+        if (v_impar != -1)
+            return v_impar;
+        if (v_qualquer != -1)
+            return v_qualquer;
+        return -1; // Grafo vazio ou sem arestas.
+    }
+
+    // Conta o número de vértices com grau ímpar
+    private static int contarGrausImpares(ArrayList<Integer>[] grafo, int N) {
+        int count = 0;
+        for (int i = 0; i < N; i++) {
+            if (grau(grafo, i) % 2 != 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // Clona o grafo para trabalhar no grafo auxiliar G'
+    private static ArrayList<Integer>[] clonarGrafo(ArrayList<Integer>[] original, int N) {
+        ArrayList<Integer>[] clone = new ArrayList[N];
+        for (int i = 0; i < N; i++) {
+            clone[i] = new ArrayList<>(original[i]);
+        }
+        return clone;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int N;
+        Scanner scannerFile;
+        File file;
+
+        file = lerArquivo();
+
+        scannerFile = new Scanner(file);
+        // N = Vertices,
+        N = scannerFile.nextInt();
+
+        // Inicializa a tabela para fazer a busca.
+        TabelaBusca[] tabela = new TabelaBusca[N];
+        for (int i = 0; i < N; i++) {
+            tabela[i] = new TabelaBusca();
+        }
+
+        // Inicializa a Lista de Adjacencia.
+        @SuppressWarnings("unchecked")
+        ArrayList<Integer>[] listaAdjacente = (ArrayList<Integer>[]) new ArrayList[N];
+        for (int i = 0; i < N; i++) {
+            listaAdjacente[i] = new ArrayList<Integer>();
+        }
+
+        // Monta o Grafo a partir do arquivo txt
+        montarGrafo(listaAdjacente, scannerFile, N);
+
+        // --- PONTO DE CHAMADA DO ALGORITMO DE FLEURY ---
+
+        ArrayList<Integer> caminhoEuleriano = algoritmoFleury(listaAdjacente, tabela, N);
+
+        if (!caminhoEuleriano.isEmpty()) {
+            System.out.println("\n--- Resultado do Algoritmo de Fleury ---");
+            System.out.print("Caminho/Circuito Euleriano: ");
+
+            // Formata a saída do caminho
+            for (int i = 0; i < caminhoEuleriano.size(); i++) {
+                System.out.print(caminhoEuleriano.get(i));
+                if (i < caminhoEuleriano.size() - 1) {
+                    System.out.print(" -> ");
+                }
+            }
+            System.out.println();
+
+            
+
+        scannerFile.close();
+    }
+
+}
