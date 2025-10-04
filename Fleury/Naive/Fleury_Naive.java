@@ -74,7 +74,9 @@ public class Fleury_Naive {
 
     public static int buscaEmProfundidadeIterativaNaive(TabelaBusca[] tabela, ArrayList<Integer>[] grafo, int vInicial,
             int N) {
-        int t = 1;
+
+        resetTabela(tabela, N);
+        int t = 0;
         // Começa em 1 para contar vertice inicial
         int encontrados = 1;
 
@@ -119,7 +121,7 @@ public class Fleury_Naive {
             int v) {
         boolean ehPonte = false;
         int alcancaveis = buscaEmProfundidadeIterativaNaive(tabela, grafo, vInicial, N);
-        resetTabela(tabela, N);
+
         // remove, testa, restaura
         removerAresta(grafo, u, v);
 

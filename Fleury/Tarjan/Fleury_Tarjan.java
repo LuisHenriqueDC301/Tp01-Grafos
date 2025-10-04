@@ -108,7 +108,7 @@ public class Fleury_Tarjan {
                 }
 
             } else {
-                // Acabou de processar o v; Atualiza sem low
+                // Acabou de processar o v; Atualiza seu low
                 pilha.pop();
                 t++;
                 tabela[v].TT = t;
@@ -117,13 +117,15 @@ public class Fleury_Tarjan {
                     tabela[pai].low = Math.min(tabela[pai].low, tabela[v].low);
                 }
 
-            }
-        }
+                if ((v == v1 && pai == v2)) {
+                    return (tabela[v2].low > tabela[v1].TD);
+                    
+                } else if ((v == v2 && pai == v1)) {
+                    return (tabela[v1].low > tabela[v2].TD);
+                    
+                }
 
-        if (tabela[v2].pai == v1) {
-            ehPonte = (tabela[v2].low > tabela[v1].TD);
-        } else if (tabela[v1].pai == v2) {
-            ehPonte = (tabela[v1].low > tabela[v2].TD);
+            }
         }
 
         return ehPonte;
@@ -175,8 +177,8 @@ public class Fleury_Tarjan {
                 // Selecionar aresta {v, w} que não seja ponte em G'
                 for (int w : vizinhos_copia) {
                     // Usando seu método de checagem de ponte no grafo atual G'
-                    
-                    if (!buscaEmProfundidadeIterativaTarjan(G_prime, tabela, v_atual, N, v, w)) {
+
+                    if (!buscaEmProfundidadeIterativaTarjan(G_prime, tabela, v, N, v, w)) {
                         w_proximo = w;
                         break; // Selecionada aresta não-ponte
                     }
@@ -193,7 +195,7 @@ public class Fleury_Tarjan {
             // b. senão (d(v) == 1)
             else {
                 // Selecionar a única aresta {v, w} disponível em G'
-                if(grau(G_prime,v) == 1){
+                if (grau(G_prime, v) == 1) {
                     w_proximo = vizinhos_copia.get(0);
                 }
             }
@@ -265,7 +267,7 @@ public class Fleury_Tarjan {
         return clone;
     }
 
-    public static void executar(String fileName) throws FileNotFoundException{
+    public static void executar(String fileName) throws FileNotFoundException {
         int N;
         Scanner scannerFile;
         File file;

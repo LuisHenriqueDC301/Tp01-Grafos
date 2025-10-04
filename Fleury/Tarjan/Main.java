@@ -10,7 +10,7 @@ public class Main {
         try (Scanner sc = new Scanner(System.in)) {
 
 
-            int N = 10000;
+            int N = 1000;
 
             String metodo = "tarjan";
             Path pasta = Paths.get("C:\\Users\\BT Gaming Store\\Documents\\PUC MINAS\\4-PERIODO\\GRAFOS\\TP01\\Tp01-Grafos\\GeradorDeGrafos\\Grafos_" + N);
