@@ -353,8 +353,12 @@ public class FleuryNaive {
         montarGrafo(listaAdjacente, scannerFile, N);
 
         // --- PONTO DE CHAMADA DO ALGORITMO DE FLEURY ---
+        long startTime = System.nanoTime(); // Inicio Da Contagem do Tempo
 
         ArrayList<Integer> caminhoEuleriano = algoritmoFleury(listaAdjacente, tabela, N);
+
+        long endTime = System.nanoTime();  // Fim Da Contagem do Tempo
+        double duration=  (endTime - startTime) / 1_000_000.0 ; //Mili Segundos
 
         if (!caminhoEuleriano.isEmpty()) {
             System.out.println("\n--- Resultado do Algoritmo de Fleury ---");
@@ -370,7 +374,7 @@ public class FleuryNaive {
             System.out.println();
 
             
-
+        IO.println("Tempo de Execucao MiliSegundos: "+ duration);
         scannerFile.close();
     }
 
