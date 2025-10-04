@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 // Trabalho Prático TGC N01 -
@@ -20,10 +21,9 @@ public class Fleury_Naive {
     }
 
     // Função pare leitura de arquivos
-    public static File lerArquivo() {
+    public static File lerArquivo(String fileName) {
         // scanner não é fechado aqui para não conflitar com a Main
         Scanner scanner = new Scanner(System.in);
-        String fileName;
         File file;
         System.out.println("Digite o nome do arquivo");
         fileName = scanner.nextLine();
@@ -115,16 +115,17 @@ public class Fleury_Naive {
     }
 
     // Método Naive para ver se aresta {u,v} é ponte
-    public static boolean ehPonteNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int vInicial, int N, int u, int v) {
+    public static boolean ehPonteNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int vInicial, int N, int u,
+            int v) {
         boolean ehPonte = false;
-
+        int alcancaveis = buscaEmProfundidadeIterativaNaive(tabela, grafo, vInicial, N);
         resetTabela(tabela, N);
         // remove, testa, restaura
         removerAresta(grafo, u, v);
 
         int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, vInicial, N);
 
-        if (alcancados < N) {
+        if (alcancados < alcancaveis) {
             ehPonte = true;
         }
 
@@ -178,8 +179,8 @@ public class Fleury_Naive {
                 // Selecionar aresta {v, w} que não seja ponte em G'
                 for (int w : vizinhos_copia) {
                     // Usando seu método de checagem de ponte no grafo atual G'
-                    
-                    if (!ehPonteNaive(G_prime, tabela,v_atual, N, v, w)) {
+
+                    if (!ehPonteNaive(G_prime, tabela, v_atual, N, v, w)) {
                         w_proximo = w;
                         break; // Selecionada aresta não-ponte
                     }
@@ -195,8 +196,11 @@ public class Fleury_Naive {
             }
             // b. senão (d(v) == 1)
             else {
+                if (grau(G_prime, v) == 1) {
+                    w_proximo = vizinhos_copia.get(0);
+                }
                 // Selecionar a única aresta {v, w} disponível em G'
-                w_proximo = vizinhos_copia.get(0);
+
             }
 
             // Checagem de segurança
@@ -266,12 +270,12 @@ public class Fleury_Naive {
         return clone;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void executar(String fileName) throws FileNotFoundException {
         int N;
         Scanner scannerFile;
         File file;
 
-        file = lerArquivo();
+        file = new File(fileName);
 
         scannerFile = new Scanner(file);
         // N = Vertices,
@@ -292,17 +296,10 @@ public class Fleury_Naive {
 
         // Monta o Grafo a partir do arquivo txt
         montarGrafo(listaAdjacente, scannerFile, N);
-
-        // --- PONTO DE CHAMADA DO ALGORITMO DE FLEURY ---
-        long startTime = System.nanoTime(); // Inicio Da Contagem do Tempo
-
         ArrayList<Integer> caminhoEuleriano = algoritmoFleury(listaAdjacente, tabela, N);
 
-        long endTime = System.nanoTime(); // Fim Da Contagem do Tempo
-        double duration = (endTime - startTime) / 1_000_000.0; // Mili Segundos
-
         if (!caminhoEuleriano.isEmpty()) {
-            System.out.println("\n--- Resultado do Algoritmo de Fleury-Naive ---");
+            System.out.println("\n--- Resultado do Algoritmo de Fleury-Naive");
             System.out.print("Caminho/Circuito Euleriano: ");
 
             // Formata a saída do caminho
@@ -312,11 +309,12 @@ public class Fleury_Naive {
                     System.out.print(" -> ");
                 }
             }
-            System.out.println();
 
-            System.out.println("Tempo de Execucao MiliSegundos: " + duration);
             scannerFile.close();
         }
+    }
+
+    public static void main(String[] args) throws Exception {
 
     }
 }
