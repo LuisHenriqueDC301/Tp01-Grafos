@@ -5,9 +5,9 @@ import java.util.*;
 // Alunos: 
 // - Arthur Henrique Tristão Pinto
 // - Luis Henrique Ferreira Costa
-// - 
+// - Samuel Correia Pedrosa
 
-public class FleuryNaive {
+public class Fleury_Naive {
 
     static class TabelaBusca {
         public int TD;
@@ -51,18 +51,38 @@ public class FleuryNaive {
 
     }
 
-    // Função para mostrar arestas do grafo
-    public static void mostrarArestas(ArrayList<Integer>[] listaAdjacente, int N) {
+    // Remove aresta não dirigida (u,v) das listas
+    public static void removerAresta(ArrayList<Integer>[] adj, int u, int v) {
+        adj[u].remove(Integer.valueOf(v));
+        adj[v].remove(Integer.valueOf(u));
+    }
+
+    // Restaura aresta não dirigida (u,v) nas listas
+    public static void adicionarAresta(ArrayList<Integer>[] adj, int u, int v) {
+        adj[u].add(v);
+        adj[v].add(u);
+    }
+
+    // Restaura a Tabela para fazer Busca
+    public static void resetTabela(TabelaBusca[] tabela, int N) {
         for (int i = 0; i < N; i++) {
-            for (int vizinho : listaAdjacente[i]) {
-                System.out.println(i + " -- " + vizinho);
-            }
+            tabela[i].TD = 0;
+            tabela[i].TT = 0;
+            tabela[i].pai = 0;
         }
+    }
+
+    // Pega um vértice de partida que d(v) >0
+    static int escolherStart(ArrayList<Integer>[] g, int N) {
+        for (int i = 0; i < N; i++) {
+            if (!g[i].isEmpty())
+                return i;
+        }
+        return 0; // fallback
     }
 
     public static int buscaEmProfundidadeIterativaNaive(TabelaBusca[] tabela, ArrayList<Integer>[] grafo, int vInicial,
             int N) {
-
         int t = 1;
         // Começa em 1 para contar vertice inicial
         int encontrados = 1;
@@ -103,94 +123,24 @@ public class FleuryNaive {
         return encontrados;
     }
 
-    // Remove aresta não dirigida (u,v) das listas
-    public static void removerAresta(ArrayList<Integer>[] adj, int u, int v) {
-        adj[u].remove(Integer.valueOf(v));
-        adj[v].remove(Integer.valueOf(u));
-    }
-
-    // Restaura aresta não dirigida (u,v) nas listas
-    public static void adicionarAresta(ArrayList<Integer>[] adj, int u, int v) {
-        adj[u].add(v);
-        adj[v].add(u);
-    }
-
-    // Restaura a Tabela para fazer Busca
-    public static void resetTabela(TabelaBusca[] tabela, int N) {
-        for (int i = 0; i < N; i++) {
-            tabela[i].TD = 0;
-            tabela[i].TT = 0;
-            tabela[i].pai = 0;
-        }
-    }
-
-    // Lista arestas únicas (u < v) para não testar duplicado
-    public static ArrayList<int[]> listarArestasUnicas(ArrayList<Integer>[] g, int N) {
-        ArrayList<int[]> E = new ArrayList<>();
-        for (int u = 0; u < N; u++) {
-            for (int v : g[u]) {
-                if (u < v)
-                    E.add(new int[] { u, v });
-            }
-        }
-        return E;
-    }
-
-    // Pega um vértice de partida que d(v) >0
-    static int escolherStart(ArrayList<Integer>[] g, int N) {
-        for (int i = 0; i < N; i++) {
-            if (!g[i].isEmpty())
-                return i;
-        }
-        return 0; // fallback
-    }
-
     // Método Naive para ver se aresta {u,v} é ponte
     public static boolean ehPonteNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int N, int u, int v) {
         boolean ehPonte = false;
         int start = escolherStart(grafo, N);
-        resetTabela(tabela, N);
-        int verticesEncontraveis = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
 
         resetTabela(tabela, N);
         // remove, testa, restaura
         removerAresta(grafo, u, v);
 
-        int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
+        int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, 1, N);
 
-        if (alcancados < verticesEncontraveis) {
+        if (alcancados < N) {
             ehPonte = true;
         }
 
         adicionarAresta(grafo, u, v);
         return ehPonte;
 
-    }
-
-    // Método para encontrar todas as pontes utilizando busca iterativa
-    public static ArrayList<int[]> pontesNaive(ArrayList<Integer>[] grafo, TabelaBusca[] tabela, int N) {
-        ArrayList<int[]> pontes = new ArrayList<>();
-        ArrayList<int[]> arestas = listarArestasUnicas(grafo, N);
-
-        int start = escolherStart(grafo, N);
-        resetTabela(tabela, N);
-        int verticesEncontraveis = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
-
-        for (int[] e : arestas) {
-            int u = e[0], v = e[1];
-            resetTabela(tabela, N);
-            // remove, testa, restaura
-            removerAresta(grafo, u, v);
-
-            int alcancados = buscaEmProfundidadeIterativaNaive(tabela, grafo, start, N);
-
-            if (alcancados < verticesEncontraveis) {
-                pontes.add(new int[] { u, v });
-            }
-
-            adicionarAresta(grafo, u, v);
-        }
-        return pontes;
     }
 
     public static ArrayList<Integer> algoritmoFleury(ArrayList<Integer>[] grafoOriginal, TabelaBusca[] tabela, int N) {
@@ -352,16 +302,19 @@ public class FleuryNaive {
         // Monta o Grafo a partir do arquivo txt
         montarGrafo(listaAdjacente, scannerFile, N);
 
+        for (int i = 0; i < N; i++) {
+            Collections.sort(listaAdjacente[i]);
+        }
         // --- PONTO DE CHAMADA DO ALGORITMO DE FLEURY ---
         long startTime = System.nanoTime(); // Inicio Da Contagem do Tempo
 
         ArrayList<Integer> caminhoEuleriano = algoritmoFleury(listaAdjacente, tabela, N);
 
-        long endTime = System.nanoTime();  // Fim Da Contagem do Tempo
-        double duration=  (endTime - startTime) / 1_000_000.0 ; //Mili Segundos
+        long endTime = System.nanoTime(); // Fim Da Contagem do Tempo
+        double duration = (endTime - startTime) / 1_000_000.0; // Mili Segundos
 
         if (!caminhoEuleriano.isEmpty()) {
-            System.out.println("\n--- Resultado do Algoritmo de Fleury ---");
+            System.out.println("\n--- Resultado do Algoritmo de Fleury-Naive ---");
             System.out.print("Caminho/Circuito Euleriano: ");
 
             // Formata a saída do caminho
@@ -373,9 +326,9 @@ public class FleuryNaive {
             }
             System.out.println();
 
-            
-        IO.println("Tempo de Execucao MiliSegundos: "+ duration);
-        scannerFile.close();
-    }
+            System.out.println("Tempo de Execucao MiliSegundos: " + duration);
+            scannerFile.close();
+        }
 
-}}
+    }
+}
