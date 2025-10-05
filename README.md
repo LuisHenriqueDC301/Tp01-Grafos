@@ -43,10 +43,15 @@ Contém o programa responsável por gerar grafos aleatórios conectados:
 
 ---
 
-### **Relatorios/**
+### **Resultados/**
 Guarda os resultados dos testes de desempenho (em milissegundos) para cada tamanho de grafo:
 - `relatorio_naive_[N].txt`  
 - `relatorio_tarjan_[N].txt`
+
+---
+
+### **Relatório/**
+Relatório feito a partir da implementação em PDF e .TEX
 
 ---
 
