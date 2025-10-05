@@ -1,0 +1,14 @@
+Relatório NAIVE | N=100000 - fator arestas 1.5 
+eulerian_100000_1.txt - 2393776 ms
+eulerian_100000_2.txt - 1692846 ms
+eulerian_100000_3.txt - 2254230 ms
+eulerian_100000_4.txt - 2318280 ms
+non_eulerian_100000_1.txt - 143 ms
+non_eulerian_100000_2.txt - 115 ms
+non_eulerian_100000_3.txt - 115 ms
+non_eulerian_100000_4.txt - 119 ms
+semi_eulerian_100000_1.txt - 1940418 ms
+semi_eulerian_100000_2.txt - 1944440 ms
+semi_eulerian_100000_3.txt - 2191330 ms
+semi_eulerian_100000_4.txt - 2073834 ms
+Média total: 1400803.83 ms

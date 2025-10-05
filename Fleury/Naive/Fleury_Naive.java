@@ -317,6 +317,10 @@ public class Fleury_Naive {
     }
 
     public static void main(String[] args) throws Exception {
-
+        //Digite o caminho do arquivo que tenha o grafo
+        System.out.println("Digite o caminho do arquivo que contem o grafo");
+        Scanner scan = new Scanner(System.in);
+        String fileName = scan.nextLine();
+        executar(fileName);
     }
 }

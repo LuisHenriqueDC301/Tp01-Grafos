@@ -21,10 +21,11 @@ public class Fleury_Tarjan {
     }
 
     // Função pare leitura de arquivos
-    public static File lerArquivo(String fileName) {
+    public static File lerArquivo() {
         // scanner não é fechado aqui para não conflitar com a Main
         Scanner scanner = new Scanner(System.in);
-        File file;
+        String fileName = scanner.nextLine();
+        File file = new File(fileName);
         System.out.println("Digite o nome do arquivo");
         fileName = scanner.nextLine();
         file = new File(fileName);
@@ -312,6 +313,10 @@ public class Fleury_Tarjan {
     }
 
     public static void main(String[] args) throws Exception {
-
+        //Digite o caminho do arquivo que tenha o grafo
+        System.out.println("Digite o caminho do arquivo que contem o grafo");
+        Scanner scan = new Scanner(System.in);
+        String fileName = scan.nextLine();
+        executar(fileName);
     }
 }

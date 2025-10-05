@@ -1,0 +1,14 @@
+Relatório TARJAN | N=100000 - fator arestas 1.5
+eulerian_100000_1.txt - 1485655 ms
+eulerian_100000_2.txt - 1127569 ms
+eulerian_100000_3.txt - 1460127 ms
+eulerian_100000_4.txt - 793149 ms
+non_eulerian_100000_1.txt - 127 ms
+non_eulerian_100000_2.txt - 130 ms
+non_eulerian_100000_3.txt - 167 ms
+non_eulerian_100000_4.txt - 125 ms
+semi_eulerian_100000_1.txt - 1047993 ms
+semi_eulerian_100000_2.txt - 1108879 ms
+semi_eulerian_100000_3.txt - 1111036 ms
+semi_eulerian_100000_4.txt - 1112874 ms
+Média total: 770652.58 ms

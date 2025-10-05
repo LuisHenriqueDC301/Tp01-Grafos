@@ -4,17 +4,20 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+//Código que usei para rodar todos os grafos gerando o relatório e a média para todos de formar automatizada, ele usa o caminho pastas pré setadas com os grafos
 
 public class Main {
     public static void main(String[] args) {
         try (Scanner sc = new Scanner(System.in)) {
 
-
             int N = 10000;
 
             String metodo = "naive";
-            Path pasta = Paths.get("C:\\Users\\BT Gaming Store\\Documents\\PUC MINAS\\4-PERIODO\\GRAFOS\\TP01\\Tp01-Grafos\\GeradorDeGrafos\\Grafos_" + N);
-            Path relatorios = Paths.get("C:\\Users\\BT Gaming Store\\Documents\\PUC MINAS\\4-PERIODO\\GRAFOS\\TP01\\Tp01-Grafos\\Relatorios\\");
+            Path pasta = Paths.get(
+                    "C:\\Users\\BT Gaming Store\\Documents\\PUC MINAS\\4-PERIODO\\GRAFOS\\TP01\\Tp01-Grafos\\GeradorDeGrafos\\Grafos_"
+                            + N);
+            Path relatorios = Paths.get(
+                    "C:\\Users\\BT Gaming Store\\Documents\\PUC MINAS\\4-PERIODO\\GRAFOS\\TP01\\Tp01-Grafos\\Relatorios\\");
             if (!Files.isDirectory(pasta)) {
                 System.err.println("❌ Pasta não encontrada: " + pasta.toAbsolutePath());
                 return;
@@ -42,10 +45,11 @@ public class Main {
                 for (Path arq : arquivos) {
                     long t0 = System.nanoTime();
                     try {
-                       
-                            // chama seu Naive
-                            Fleury_Naive.executar(arq.toString());
-                        
+
+                        // chama seu Naive
+                        System.out.println("RODANDO FILE " + cont);
+                        Fleury_Naive.executar(arq.toString());
+
                     } catch (FileNotFoundException e) {
                         System.err.println("Arquivo não encontrado: " + arq.getFileName());
                         continue;
@@ -73,6 +77,5 @@ public class Main {
             System.err.println("Erro de I/O: " + e.getMessage());
         }
     }
-
 
 }

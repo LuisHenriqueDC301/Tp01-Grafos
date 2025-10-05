@@ -1,4 +1,3 @@
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -6,8 +5,8 @@ import java.util.*;
 public class GeradorGrafos {
 
     public static void main(String[] args) {
-        int n = 100000; // número de vértices
-        int m = 150000; // número de arestas
+        int n = 10000; // número de vértices
+        int m = 15000; // número de arestas
 
         int qtdEuleriano = 4; // quantos arquivos eulerianos gerar
         int qtdSemiEuleriano = 4; // quantos arquivos semi gerar
