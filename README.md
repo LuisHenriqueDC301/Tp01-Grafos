@@ -23,8 +23,6 @@ Além disso, um **gerador de grafos aleatórios** foi desenvolvido para criar in
 
 ---
 
-## 🧩 Estrutura do Projeto
-
 ## 📁 Estrutura do Projeto
 
 ### **Fleury/**
