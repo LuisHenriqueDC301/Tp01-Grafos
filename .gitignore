@@ -1,1 +1,21 @@
-.class
+# Arquivos compilados Java
+*.class
+
+# Arquivos de pacote
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+.DS_Store
+
+# Arquivos temporários
+*~
+*.swp
+*.swo
