@@ -23,10 +23,6 @@ public class TP02 {
         }
     }
 
-    // Função para montar Lista de Adjacência para Direcionado e Ponderado a partir
-    // do arquivo
-    // txt
-
     public static void montarGrafo(ArrayList<Aresta>[] listaAdjacente, Scanner scannerFile, int N) {
         int origem, destino, peso;
 
@@ -35,67 +31,9 @@ public class TP02 {
             destino = scannerFile.nextInt();
             peso = scannerFile.nextInt();
             listaAdjacente[origem].add(new Aresta(destino, peso));
-
+            listaAdjacente[destino].add(new Aresta(origem, peso)); // Grafo não-direcionado
         }
     }
-
-    // Seleciona o vértice imaturo com a menor distância.
-    // private static int selecionarImaturoComMenorDist(long[] dist, boolean[] maduro) {
-    //     int indice = -1;
-    //     long menorDist = Long.MAX_VALUE;
-    //     for (int v = 0; v < dist.length; v++) {
-    //         if (!maduro[v] && dist[v] < menorDist) {
-    //             menorDist = dist[v];
-    //             indice = v;
-    //         }
-    //     }
-    //     return indice;
-    // }
-
-    // Relaxa todas as arestas que saem do vértice v.
-    // private static void relaxarSucessores(
-    //         int origemAtual,
-    //         ArrayList<Aresta>[] listaAdjacencia,
-    //         long[] distancia,
-    //         int[] predecessor,
-    //         int[] arestasUsadas) {
-
-    //     long distanciaOrigemAtual = distancia[origemAtual];
-    //     if (distanciaOrigemAtual == Long.MAX_VALUE)
-    //         return; // vértice inalcançável: evita overflow
-
-    //     for (Aresta aresta : listaAdjacencia[origemAtual]) {
-    //         int destino = aresta.getDestino();
-    //         long novaDistancia = distanciaOrigemAtual + (long) aresta.getPeso();
-    //         int novasArestasUsadas = arestasUsadas[origemAtual] + 1;
-
-    //         // Caso 1: encontramos caminho com menor custo
-    //         if (novaDistancia < distancia[destino]) {
-    //             distancia[destino] = novaDistancia;
-    //             predecessor[destino] = origemAtual;
-    //             arestasUsadas[destino] = novasArestasUsadas;
-    //         }
-    //         // Caso 2: mesmo custo, mas caminho com menos arestas
-    //         else if (novaDistancia == distancia[destino]
-    //                 && novasArestasUsadas < arestasUsadas[destino]) {
-    //             predecessor[destino] = origemAtual;
-    //             arestasUsadas[destino] = novasArestasUsadas;
-    //         }
-    //     }
-    // }
-
-    // public static void imprimirCaminho(int destino, int[] pred) {
-    //     if (destino < 0) {
-    //         System.out.print("Caminho inexistente.");
-    //         return;
-    //     }
-    //     if (pred[destino] == -1) {
-    //         System.out.print(destino);
-    //     } else {
-    //         imprimirCaminho(pred[destino], pred);
-    //         System.out.print(" -> " + destino);
-    //     }
-    // }
 
     public static void imprimirGrafo(ArrayList<Aresta>[] listaAdj) {
         for (int i = 1; i < listaAdj.length; i++) {
@@ -105,6 +43,88 @@ public class TP02 {
             }
             System.out.println();
         }
+    }
+
+    public static int[][] floydWarshall(ArrayList<Aresta>[] listaAdj, int N) {
+        int[][] dist = new int[N + 1][N + 1];
+        final int INF = 999999999;
+
+        // 1. Inicializar distâncias
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= N; j++) {
+                if (i == j) {
+                    dist[i][j] = 0;
+                } else {
+                    dist[i][j] = INF;
+                }
+            }
+        }
+
+        // 2. Para toda aresta (i, j) ∈ E(G) faça dist[i, j] ← dij
+        for (int i = 1; i <= N; i++) {
+            for (Aresta aresta : listaAdj[i]) {
+                dist[i][aresta.getDestino()] = aresta.getPeso();
+            }
+        }
+
+        // 3. Para cada possível intermediário k
+        for (int k = 1; k <= N; k++) {
+            for (int i = 1; i <= N; i++) {
+                for (int j = 1; j <= N; j++) {
+                    if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+
+        return dist;
+    }
+
+    // Calcula o raio de um conjunto de centros
+    private static int calcularRaio(int[][] dist, int[] centros, int N) {
+        int raio = 0;
+        for (int v = 1; v <= N; v++) {
+            int menorDist = Integer.MAX_VALUE;
+            for (int centro : centros) {
+                menorDist = Math.min(menorDist, dist[v][centro]);
+            }
+            raio = Math.max(raio, menorDist);
+        }
+        return raio;
+    }
+
+    // Gera combinações recursivamente
+    private static void gerarCombinacoes(int[][] dist, int N, int K, int[] centros, int pos, int inicio, int[] melhorSolucao, int[] melhorRaio) {
+        if (pos == K) {
+            int raio = calcularRaio(dist, centros, N);
+            if (raio < melhorRaio[0]) {
+                melhorRaio[0] = raio;
+                System.arraycopy(centros, 0, melhorSolucao, 0, K);
+            }
+            return;
+        }
+
+        for (int i = inicio; i <= N - (K - pos) + 1; i++) {
+            centros[pos] = i;
+            gerarCombinacoes(dist, N, K, centros, pos + 1, i + 1, melhorSolucao, melhorRaio);
+        }
+    }
+
+    // Solução Exata: testa todas as combinações de k centros
+    public static int[] solucaoExata(int[][] dist, int N, int K) {
+        int[] melhorSolucao = new int[K];
+        int[] melhorRaio = {Integer.MAX_VALUE};
+        int[] centros = new int[K];
+
+        gerarCombinacoes(dist, N, K, centros, 0, 1, melhorSolucao, melhorRaio);
+
+        System.out.println("Solução Exata - Raio: " + melhorRaio[0]);
+        System.out.print("Centros: ");
+        for (int c : melhorSolucao) System.out.print(c + " ");
+        System.out.println();
+
+        return melhorSolucao;
     }
 
     public static void executar(String nomeArquivo) throws FileNotFoundException {
@@ -125,23 +145,21 @@ public class TP02 {
             listaAdj[i] = new ArrayList<>();
         }
 
-
         montarGrafo(listaAdj, scannerFile, N);
-        imprimirGrafo(listaAdj);
-        
-
         scannerFile.close();
+
+        System.out.println("N=" + N + ", K=" + K);
+        
+        int[][] dist = floydWarshall(listaAdj, N);
+        solucaoExata(dist, N, K);
     }
 
     public static void main(String[] args) throws FileNotFoundException {
         Scanner sc = new Scanner(System.in);
         System.out.print("Digite o nome do arquivo: ");
-        // String nomeArquivo = sc.nextLine().trim();
-        String nomeArquivo;
-        // for(int i =1; i<=40 ;i++){
-        //     nomeArquivo = "g/pmed"+i+".txt";
-        //     executar(nomeArquivo);
-        // }
+        String nomeArquivo = sc.nextLine().trim();
+        executar(nomeArquivo);
+        sc.close();
     }
 
 }
