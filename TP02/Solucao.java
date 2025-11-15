@@ -2,7 +2,7 @@ public class Solucao {
     private String tipo;
     private int[] centros;
     private int raio;
-    private long tempoExecucao;
+    private long tempoExecucao; // em milissegundos
 
     public Solucao(String tipo, int[] centros, int raio, long tempoExecucao) {
         this.tipo = tipo;
@@ -28,18 +28,19 @@ public class Solucao {
     }
 
     public void imprimir() {
-        System.out.println("╔════════════════════════════════════════════════════════╗");
-        System.out.println("║  Solução " + String.format("%-44s", tipo) + "║");
-        System.out.println("╠════════════════════════════════════════════════════════╣");
-        System.out.println("║  Raio: " + String.format("%-47d", raio) + "║");
-        System.out.print("║  Centros: ");
+        double tempoMs = tempoExecucao * 1.0; // converte pra double pra ter casas decimais
+
+        System.out.println("Solução: " + tipo);
+        System.out.println("Raio: " + raio);
+
+        System.out.print("Centros: ");
         StringBuilder centrosStr = new StringBuilder();
         for (int c : centros) {
             centrosStr.append(c).append(" ");
         }
-        System.out.println(String.format("%-42s", centrosStr.toString()) + "║");
-        System.out.println("║  Tempo: " + String.format("%-46s", tempoExecucao + "ms") + "║");
-        System.out.println("╚════════════════════════════════════════════════════════╝");
+        System.out.println(centrosStr.toString().trim());
+
+        System.out.println("Tempo: " + String.format("%.3f ms", tempoMs));
         System.out.println();
     }
 }
