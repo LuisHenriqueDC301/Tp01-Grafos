@@ -1,0 +1,6 @@
+╔════════════════════════════════════════════════════════╗
+║        PROBLEMA DOS K-CENTROS - TP02 Grafos            ║
+║    Arthur Pinto | Luis Costa | Samuel Pedrosa          ║
+╚════════════════════════════════════════════════════════╝
+
+Processando arquivo: pmed1.txt

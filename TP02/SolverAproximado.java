@@ -1,4 +1,5 @@
 public class SolverAproximado {
+
     private MatrizDistancias matrizDist;
     private int numVertices;
     private int numCentros;
@@ -10,44 +11,54 @@ public class SolverAproximado {
     }
 
     public Solucao resolver() {
+
+        long inicio = System.nanoTime();  // mede em nanos
+
+        // --------------------------------------
+        // ALGORITMO DE GONZALEZ (P-MEDIAN APPROX)
+        // --------------------------------------
         int[] centros = new int[numCentros];
-        int[] distMinCentro = new int[numVertices + 1];
 
-        long inicio = System.currentTimeMillis();
-
-        // Primeiro centro (arbitrário)
+        // Passo 1: escolhe um centro inicial (você pode usar qualquer vértice, normalmente 1)
         centros[0] = 1;
-        for (int v = 1; v <= numVertices; v++) {
-            distMinCentro[v] = matrizDist.getDistancia(v, centros[0]);
-        }
 
-        // Centros restantes - Algoritmo de Gonzalez
+        // Passo 2: escolher sempre o vértice mais distante do conjunto atual
         for (int i = 1; i < numCentros; i++) {
-            int maxDist = -1;
-            int novoCentro = -1;
+            int maisDistante = -1;
+            int distMax = -1;
 
             for (int v = 1; v <= numVertices; v++) {
-                if (distMinCentro[v] > maxDist) {
-                    maxDist = distMinCentro[v];
-                    novoCentro = v;
+
+                // acha a menor distância até algum dos centros já escolhidos
+                int menorDist = Integer.MAX_VALUE;
+                for (int j = 0; j < i; j++) {
+                    menorDist = Math.min(menorDist, matrizDist.getDistancia(v, centros[j]));
+                }
+
+                if (menorDist > distMax) {
+                    distMax = menorDist;
+                    maisDistante = v;
                 }
             }
 
-            centros[i] = novoCentro;
-
-            for (int v = 1; v <= numVertices; v++) {
-                distMinCentro[v] = Math.min(distMinCentro[v], 
-                                            matrizDist.getDistancia(v, novoCentro));
-            }
+            centros[i] = maisDistante;
         }
 
-        // Calcular raio final
+        // Passo 3: calcula o raio final
         int raio = 0;
         for (int v = 1; v <= numVertices; v++) {
-            raio = Math.max(raio, distMinCentro[v]);
+            int menorDist = Integer.MAX_VALUE;
+            for (int c : centros) {
+                menorDist = Math.min(menorDist, matrizDist.getDistancia(v, c));
+            }
+            raio = Math.max(raio, menorDist);
         }
 
-        long tempo = System.currentTimeMillis() - inicio;
-        return new Solucao("Aproximada (Gonzalez)", centros, raio, tempo);
+        long fim = System.nanoTime();
+
+        // Converte para milissegundos com casas decimais
+        double tempoMs = (fim - inicio) / 1_000_000.0;
+
+        return new Solucao("Aproximada (Gonzalez)", centros, raio, tempoMs);
     }
 }

@@ -2,9 +2,9 @@ public class Solucao {
     private String tipo;
     private int[] centros;
     private int raio;
-    private long tempoExecucao; // em milissegundos
+    private double tempoExecucao; // em milissegundos (pode ter casa decimal)
 
-    public Solucao(String tipo, int[] centros, int raio, long tempoExecucao) {
+    public Solucao(String tipo, int[] centros, int raio, double tempoExecucao) {
         this.tipo = tipo;
         this.centros = centros;
         this.raio = raio;
@@ -15,7 +15,7 @@ public class Solucao {
         return raio;
     }
 
-    public long getTempoExecucao() {
+    public double getTempoExecucao() {
         return tempoExecucao;
     }
 
@@ -28,8 +28,6 @@ public class Solucao {
     }
 
     public void imprimir() {
-        double tempoMs = tempoExecucao * 1.0; // converte pra double pra ter casas decimais
-
         System.out.println("Solução: " + tipo);
         System.out.println("Raio: " + raio);
 
@@ -40,7 +38,7 @@ public class Solucao {
         }
         System.out.println(centrosStr.toString().trim());
 
-        System.out.println("Tempo: " + String.format("%.3f ms", tempoMs));
+        System.out.println("Tempo: " + String.format("%.3f ms", tempoExecucao));
         System.out.println();
     }
 }
